@@ -23,6 +23,15 @@ pub fn lookup_port(service: &str, hints: Option<AddrInfoHints>) -> io::Result<Ve
     }
 }
 
+/// Lookup the service and host name for a given connection.
+pub fn lookup(addr: &IpAddr, port: u16) -> io::Result<(String, String)> {
+    let socket: SocketAddr = (*addr, port).into();
+    match getnameinfo(&socket, 0) {
+        Ok((hostname, service)) => Ok((hostname, service)),
+        Err(e) => Err(e)?,
+    }
+}
+
 /// Lookup the service name for a given port number.
 pub fn lookup_service(port: u16) -> io::Result<String> {
     let ip: IpAddr = "127.0.0.1".parse().unwrap();
@@ -59,4 +68,3 @@ mod tests {
         assert_eq!(lookup_service(0).unwrap(), "0".to_string());
     }
 }
-
